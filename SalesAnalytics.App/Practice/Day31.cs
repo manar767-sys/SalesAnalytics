@@ -3,31 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using SalesAnalytics.App.Data;
 
-namespace SalesAnalytics.App.Practice
+namespace SalesAnalytics.App.Practice;
+public record CustomerSummary(string Name, string Email);
+
+internal static class Day31
 {
-    public record CustomerSummary(string Name, string Email);
-
-    internal class Day31
+    public static void Run()
     {
-        public static void Run() {
-            //produce list of customer names
-            IEnumerable<string> names = SampleData.Customers.Select(c => c.Name);
+        // SelectMany vs Select
+        var orders = new List<List<string>>
+        {
+            new() { "Laptop", "Mouse" },
+            new() { "Book" },
+            new() { "Lamp", "Mat", "Ball" }
+        };
 
-            //produce a list of new anynoumous data type has {name , id }
-            var nameId = SampleData.Customers.Select(c =>
-            new { CustomerName = c.Name, CustomerId = c.Id });
+        IEnumerable<List<string>> nested = orders.Select(o => o);   // still nested
+        IEnumerable<string> flattened = orders.SelectMany(o => o);  // flattened
 
-            //project into the new type/record made
-            IEnumerable<CustomerSummary> customerSummaries = SampleData.Customers.Select( x => new CustomerSummary(x.Name,x.Email));
+        // Select: customer names
+        IEnumerable<string> names = SampleData.Customers
+            .Select(c => c.Name);
 
+        // Select: anonymous type { CustomerName, CustomerId }
+        var nameAndId = SampleData.Customers
+            .Select(c => new { CustomerName = c.Name, CustomerId = c.Id });
 
-            foreach (var cs in customerSummaries)
+        // Select: project into the CustomerSummary record
+        IEnumerable<CustomerSummary> customerSummaries = SampleData.Customers
+            .Select(c => new CustomerSummary(c.Name, c.Email));
+
+        //view nested list 
+        foreach (var laptoplist in nested)
+        {
+            foreach(var lap in laptoplist)
             {
-                Console.WriteLine($"custmer name is : {cs.Name} : {cs.Email}");
-
-            
+                Console.WriteLine(lap);
             }
-
-        } 
+        }
+        //view flattened list
+        Console.WriteLine(string.Join(", ", flattened));
+        Console.WriteLine($"count of nested lists is : {nested.Count()}");
     }
 }
