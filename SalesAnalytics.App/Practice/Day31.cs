@@ -24,6 +24,7 @@ namespace SalesAnalytics.App.Practice
             foreach (var cs in customerSummaries)
             {
                 Console.WriteLine($"custmer name is : {cs.Name} : {cs.Email}");
+
             
             }
 
